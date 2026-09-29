@@ -26,7 +26,7 @@ from homeassistant.helpers.selector import (
 )
 from yarl import URL
 
-from .client import WeekeyApiError, WeekeyClient
+from .client import Account, WeekeyApiError, WeekeyAuthExpired, WeekeyClient
 from .const import (
     BASE_URL,
     CONF_GATE_IDS,
@@ -62,18 +62,34 @@ def _normalize_phpessid(raw: str) -> str:
     return value.strip().strip('"').strip("'")
 
 
-async def _validate(phpsessid: str) -> tuple[str, str] | None:
-    """Return (user_id, tenant_name), or None when the session is not accepted."""
+async def _validate(phpsessid: str) -> tuple[Account | None, list[str]]:
+    """One session, two calls: identity from the SPA shell, then the gate list.
+
+    Returns (None, []) when the cookie is not accepted. The gate list is fetched
+    here so the entry is created already populated — an entry with no selection
+    would silently produce zero entities.
+    """
     session = aiohttp.ClientSession(cookie_jar=build_cookie_jar(phpsessid))
     try:
-        account = await WeekeyClient(session, phpsessid).probe_account()
+        client = WeekeyClient(session, phpsessid)
+        account = await client.probe_account()
+        if account is None or not account.user_id:
+            return None, []
+        gate_ids: list[str] = []
+        try:
+            gates = await client.fetch_gates()
+        except (WeekeyApiError, WeekeyAuthExpired):
+            # Session verified but the list call failed (transient, or the cookie
+            # rotated between calls). Create the entry anyway; the coordinator
+            # will surface a persistent failure.
+            _LOGGER.debug("Gate list unavailable during setup; creating with no selection")
+        else:
+            gate_ids = [g.gate_id for g in gates.values() if not g.is_elevator]
     except WeekeyApiError as err:
         raise _CannotConnect(str(err)) from err
     finally:
         await session.close()
-    if account is None or not account.user_id:
-        return None
-    return account.user_id, account.tenant_name
+    return account, gate_ids
 
 
 class WeekeyConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -96,7 +112,7 @@ class WeekeyConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             phpsessid = _normalize_phpessid(user_input[CONF_PHPSESSID])
             try:
-                account = await _validate(phpsessid)
+                account, gate_ids = await _validate(phpsessid)
             except _CannotConnect:
                 return self.async_show_form(
                     step_id=step_id,
@@ -111,16 +127,22 @@ class WeekeyConfigFlow(ConfigFlow, domain=DOMAIN):
                 )
 
             if self.source == SOURCE_REAUTH:
+                # Options are untouched here on purpose: a re-auth must not reset
+                # which gates the user already chose.
                 return self.async_update_reload_and_abort(
                     self._get_reauth_entry(),
                     data_updates={CONF_PHPSESSID: phpsessid},
                 )
 
-            await self.async_set_unique_id(account[0])
+            await self.async_set_unique_id(account.user_id)
             self._abort_if_unique_id_configured()
             return self.async_create_entry(
-                title=account[1] or "Weekey",
+                title=account.tenant_name or "Weekey",
                 data={CONF_PHPSESSID: phpsessid},
+                options={
+                    CONF_GATE_IDS: gate_ids,
+                    CONF_UPDATE_INTERVAL: DEFAULT_UPDATE_INTERVAL_MIN,
+                },
             )
 
         return self.async_show_form(
