@@ -182,7 +182,7 @@ class WeekeyOptionsFlow(OptionsFlowWithReload):
                     ): SelectSelector(
                         SelectSelectorConfig(
                             options=options,
-                            mode=SelectSelectorMode.MULTIPLE,
+                            mode=SelectSelectorMode.LIST,
                             multiple=True,
                             sort=True,
                         )
