@@ -109,7 +109,8 @@ class WeekeyClient:
         }
 
     def _url(self, path: str, **params: str) -> URL:
-        return URL(BASE_URL + path, params=params or None)
+        url = URL(BASE_URL + path)
+        return url.with_query(params) if params else url
 
     async def _get_json(self, url: URL) -> object:
         try:
