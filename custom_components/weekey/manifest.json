@@ -1,0 +1,13 @@
+{
+  "domain": "weekey",
+  "name": "Weekey",
+  "codeowners": ["tiejiang29"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/tiejiang29/weekey",
+  "integration_type": "hub",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/tiejiang29/weekey/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

@@ -1,0 +1,36 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "This Weekey account is already configured.",
+      "reauth_successful": "Session cookie updated."
+    },
+    "error": {
+      "cannot_connect": "Cannot reach s.weekey.cn. Check the network and try again.",
+      "invalid_session": "That PHPSESSID was not accepted (server replied not logged in). Capture a fresh one."
+    },
+    "step": {
+      "user": {
+        "data": {
+          "phpsessid": "PHPSESSID"
+        },
+        "data_description": {
+          "phpsessid": "Session cookie value copied from a packet capture or DevTools. This is the only credential. A full \"Cookie: PHPSESSID=xxx\" line is accepted."
+        },
+        "description": "Weekey has no public login endpoint, so paste the PHPSESSID from the mini program session. The community is resolved from the session itself."
+      },
+      "reauth_confirm": {
+        "data": {
+          "phpsessid": "PHPSESSID"
+        },
+        "description": "The Weekey session expired. Capture a fresh PHPSESSID from the mini program and paste it here."
+      }
+    }
+  },
+  "entity": {
+    "button": {
+      "open": {
+        "name": "Open"
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "此 Weekey 账号已配置。",
+      "reauth_successful": "会话已更新。"
+    },
+    "error": {
+      "cannot_connect": "无法连接 s.weekey.cn，请检查网络后重试。",
+      "invalid_session": "该 PHPSESSID 未被接受（服务端返回未登录），请重新抓取后粘贴。"
+    },
+    "step": {
+      "user": {
+        "data": {
+          "phpsessid": "PHPSESSID"
+        },
+        "data_description": {
+          "phpsessid": "从抓包或浏览器 DevTools 复制的会话 Cookie 值，这是唯一凭据。可以直接粘贴整段 Cookie: PHPSESSID=xxx，会自动剥离前缀。"
+        },
+        "description": "Weekey 没有对外登录接口，需要粘贴小程序会话的 PHPSESSID。小区信息由服务端从会话本身解析，无需填写。"
+      },
+      "reauth_confirm": {
+        "data": {
+          "phpsessid": "PHPSESSID"
+        },
+        "description": "Weekey 会话已失效，请在小程序里重新抓取 PHPSESSID 后粘贴。"
+      }
+    }
+  },
+  "entity": {
+    "button": {
+      "open": {
+        "name": "开门"
+      }
+    }
+  }
+}
