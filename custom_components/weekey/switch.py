@@ -9,7 +9,7 @@ from datetime import datetime
 from time import monotonic
 
 from homeassistant.components.switch import SwitchEntity
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_call_later
@@ -66,6 +66,10 @@ class WeekeyGateSwitch(WeekeyEntity, SwitchEntity):
             self._cancel_reset()
             self._cancel_reset = None
 
+    # @callback is load-bearing: async_call_later wraps this in a HassJob, and a
+    # bare function resolves to HassJobType.Executor, which would run
+    # async_write_ha_state() off the event loop.
+    @callback
     def _async_reset(self, _now: datetime) -> None:
         self._cancel_reset = None
         self._attr_is_on = False
