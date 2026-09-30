@@ -14,7 +14,7 @@ from .config_flow import build_cookie_jar
 from .const import CONF_PHPSESSID, DOMAIN
 from .coordinator import WeekeyConfigEntry, WeekeyCoordinator
 
-PLATFORMS = [Platform.BUTTON]
+PLATFORMS = [Platform.SWITCH]
 
 _LOGGER = logging.getLogger(__name__)
 

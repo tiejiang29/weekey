@@ -27,7 +27,7 @@
     }
   },
   "entity": {
-    "button": {
+    "switch": {
       "open": {
         "name": "开门"
       }

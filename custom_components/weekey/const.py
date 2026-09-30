@@ -15,8 +15,13 @@ MIN_UPDATE_INTERVAL_MIN = 5
 # electric-strike hardware that the vendor itself asks users to confirm before opening.
 UNLOCK_COOLDOWN = 10
 
+# How long the switch stays "on" after a release command is accepted. The switch
+# state is synthetic (the vendor reports no lock state), so this is purely a UI
+# fall-back edge; it must stay well under UNLOCK_COOLDOWN.
+SWITCH_RESET_SECONDS = 3
+
 # Route names from the vendor SPA: 1/2 = 乘梯, 4 = 呼梯. Those reuse the unlock
-# endpoint with a different `floor` meaning, so they are never exposed as door buttons.
+# endpoint with a different `floor` meaning, so they are never exposed as door switches.
 ELEVATOR_TYPES = frozenset({"1", "2", "4"})
 
 BASE_URL = "https://s.weekey.cn"
