@@ -174,7 +174,7 @@ class WeekeyConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class WeekeyOptionsFlow(OptionsFlowWithReload):
-    """Pick which gates become buttons, and how often to refresh the list."""
+    """Pick which gates become switches, and how often to refresh the list."""
 
     def __init__(self, config_entry: WeekeyConfigEntry) -> None:
         self._entry = config_entry
